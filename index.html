@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도담고등학교 학생회 학습 아카이브</title>
+    <style>
+        :root {
+            --primary-color: #2b4c7e;
+            --secondary-color: #52796f;
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Malgun Gothic', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+        header { background-color: var(--primary-color); color: white; padding: 20px; text-align: center; position: relative; }
+        header h1 { font-size: 1.8rem; margin-bottom: 5px; }
+        header p { font-size: 0.95rem; opacity: 0.9; }
+        
+        .auth-container { position: absolute; right: 20px; top: 20px; }
+        button { background-color: #fff; color: var(--primary-color); border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #f0f0f0; }
+
+        nav { display: flex; justify-content: center; background-color: #3a608f; }
+        nav button { background: none; color: white; border: none; padding: 15px 30px; font-size: 1rem; cursor: pointer; border-radius: 0; font-weight: normal; }
+        nav button.active { background-color: var(--primary-color); font-weight: bold; border-bottom: 3px solid #fff; }
+
+        main { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card h3 { color: var(--primary-color); margin-bottom: 8px; }
+        .card .meta { font-size: 0.85rem; color: #777; margin-bottom: 10px; }
+
+        .admin-panel { background: #eef4f9; border: 1px dashed var(--primary-color); padding: 20px; border-radius: 8px; margin-bottom: 25px; display: none; }
+        .admin-panel.active { display: block; }
+        .admin-panel input, .admin-panel textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .admin-panel button { background-color: var(--primary-color); color: white; }
+
+        .notice-box { background: #e8f4f8; padding: 15px; border-left: 4px solid var(--primary-color); margin-bottom: 20px; border-radius: 0 8px 8px 0; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>도담고등학교 학습 아카이브</h1>
+        <p>학생회 기획부가 제공하는 추천 도서 및 학습 자료실</p>
+        <div class="auth-container">
+            <span id="auth-status" style="font-size: 0.85rem; margin-right: 10px;">학생 모드</span>
+            <button id="auth-btn" onclick="toggleAuth()">학생회 로그인</button>
+        </div>
+    </header>
+
+    <nav>
+        <button class="tab-btn active" onclick="switchTab('books')">📚 추천 도서</button>
+        <button class="tab-btn" onclick="switchTab('archive')">📂 학습 자료실</button>
+    </nav>
+
+    <main>
+        <!-- 학생회 전용 글쓰기 패널 -->
+        <div id="admin-panel" class="admin-panel">
+            <h3>✍️ [학생회 전용] 새 게시글 작성</h3>
+            <p style="font-size: 0.85rem; color: #555; margin-bottom: 10px;">현재 선택된 탭(<span id="current-tab-name">추천 도서</span>)에 게시글이 등록됩니다.</p>
+            <input type="text" id="post-title" placeholder="제목을 입력하세요">
+            <textarea id="post-content" rows="4" placeholder="내용을 입력하세요 (링크나 설명 등)"></textarea>
+            <button onclick="addPost()">게시하기</button>
+        </div>
+
+        <!-- 추천 도서 탭 -->
+        <div id="tab-books" class="tab-content active">
+            <h2>학생회 추천 도서</h2>
+            <p style="color: #666; margin-bottom: 20px; font-size: 0.9rem;">학생회 기획부가 엄선한 학년별·과목별 추천 도서 목록입니다.</p>
+            <div id="books-list">
+                <!-- 기본 샘플 게시글 -->
+                <div class="card">
+                    <h3>[인문] 난중일기 - 이순신</h3>
+                    <div class="meta">작성자: 학생회 기획부 | 등록일: 2026-03-01</div>
+                    <p>리더십과 위기 극복 역량을 기를 수 있는 고서입니다. 학생회 추천 도서 1선!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 학습 자료실 탭 -->
+        <div id="tab-archive" class="tab-content">
+            <h2>학습 자료실</h2>
+            <div class="notice-box">
+                💡 <strong>자료 제출 안내:</strong> 학생들이 제작하거나 유용한 학습 자료를 <strong>25s013@dodam.hs.kr</strong>로 보내주시면, 학생회 기획부의 심사를 거쳐 이 곳 자료실에 업로드됩니다.
+            </div>
+            <div id="archive-list">
+                <!-- 기본 샘플 게시글 -->
+                <div class="card">
+                    <h3>[공지] 2026학년도 1학기 중간고사 대비 학습 플래너 템플릿</h3>
+                    <div class="meta">작성자: 학생회 기획부 (제보: 2학년 OOO) | 등록일: 2026-03-05</div>
+                    <p>학생 여러분이 제보해주신 우수 학습 플래너 양식입니다. 다운로드하여 활용해 보세요!</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 학생회 비밀번호 설정 (원하시는 대로 변경 가능합니다)
+        const ADMIN_PASSWORD = "dodam2026!";
+        let isAdmin = false;
+        let currentActiveTab = 'books';
+
+        function toggleAuth() {
+            if (!isAdmin) {
+                const pw = prompt("학생회 인증 비밀번호를 입력하세요:");
+                if (pw === ADMIN_PASSWORD) {
+                    isAdmin = true;
+                    document.getElementById('auth-status').innerText = "학생회(기획부) 로그인됨";
+                    document.getElementById('auth-btn').innerText = "로그아웃";
+                    document.getElementById('admin-panel').classList.add('active');
+                    alert("학생회 권한으로 로그인되었습니다.");
+                } else if (pw !== null) {
+                    alert("비밀번호가 틀렸습니다.");
+                }
+            } else {
+                isAdmin = false;
+                document.getElementById('auth-status').innerText = "학생 모드";
+                document.getElementById('auth-btn').innerText = "학생회 로그인";
+                document.getElementById('admin-panel').classList.remove('active');
+                alert("로그아웃되었습니다.");
+            }
+        }
+
+        function switchTab(tabName) {
+            currentActiveTab = tabName;
+            document.getElementById('current-tab-name').innerText = tabName === 'books' ? '추천 도서' : '학습 자료실';
+            
+            // 탭 버튼 스타일 전환
+            const buttons = document.querySelectorAll('nav button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            if(tabName === 'books') buttons[0].classList.add('active');
+            else buttons[1].classList.add('active');
+
+            // 탭 콘텐츠 전환
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        function addPost() {
+            const title = document.getElementById('post-title').value.trim();
+            const content = document.getElementById('post-content').value.trim();
+
+            if (!title || !content) {
+                alert("제목과 내용을 모두 입력해주세요.");
+                return;
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            const listId = currentActiveTab === 'books' ? 'books-list' : 'archive-list';
+            const targetList = document.getElementById(listId);
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <h3>${escapeHtml(title)}</h3>
+                <div class="meta">작성자: 학생회 기획부 | 등록일: ${today}</div>
+                <p>${escapeHtml(content).replace(/\n/g, '<br>')}</p>
+            `;
+
+            // 맨 위에 새 글 추가
+            targetList.prepend(card);
+
+            // 입력창 초기화
+            document.getElementById('post-title').value = '';
+            document.getElementById('post-content').value = '';
+            alert("게시글이 성공적으로 등록되었습니다.");
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+    </script>
+</body>
+</html>
